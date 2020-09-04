@@ -1,5 +1,4 @@
 import matplotlib.pyplot as plt
-import pandas as pd
 from scipy import stats
 import csv
 
@@ -27,9 +26,12 @@ if __name__ == "__main__":
 	slope, intercept, r_value, p_value, std_err = stats.linregress(km, price)
 	predicted = predict(intercept, slope, inputkm)
 
+	print("slope : " + str(slope) + " intercept : " + str(intercept))
+
 	predicted_grid = [intercept + slope * i for i in km]
 	axes = plt.axes()
 	axes.grid()
 	plt.scatter(km,price)
+	plt.scatter(inputkm, predicted, c='y')
 	plt.plot(km, predicted_grid, c='r')
 	plt.show()
