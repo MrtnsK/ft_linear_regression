@@ -23,12 +23,13 @@ def reading_csv():
 if __name__ == "__main__":
 	km, price = reading_csv()
 
-	inputkm = input("Le kilometrage de la voiture a estime :\n")
+	inputkm = input("Le kilometrage de la voiture a estime : ")
 	slope, intercept, r_value, p_value, std_err = stats.linregress(km, price)
-	print(predict(intercept, slope, inputkm))
+	predicted = predict(intercept, slope, inputkm)
 
-
-	#axes = plt.axes()
-	#axes.grid()
-	#plt.scatter(km,price)
-	#plt.show()
+	predicted_grid = [intercept + slope * i for i in km]
+	axes = plt.axes()
+	axes.grid()
+	plt.scatter(km,price)
+	plt.plot(km, predicted_grid, c='r')
+	plt.show()
