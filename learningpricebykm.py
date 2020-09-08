@@ -41,10 +41,11 @@ def learning_thetas(X, Y, theta0, theta1):
 	B0 = 0
 	B1 = 0
 	new_y = lambda x: tmptheta0 + tmptheta1 * x
+	rng = range(len(X))
 	m = len(X)
 	for i in range(len(X)):
-		B0 += 1.0/m * sum([Y[i] - new_y(X[i]) for i in m])
-		B1 += 1.0/m * sum([(Y[i] - new_y(X[i])) * X[i] for i in m])
+		B0 += 1.0/m * sum([Y[i] - new_y(X[i]) for i in rng])
+		B1 += 1.0/m * sum([(Y[i] - new_y(X[i])) * X[i] for i in rng])
 	tmptheta0 = Lrate * B0
 	tmptheta1 = Lrate * B1
 	return tmptheta0, tmptheta1
