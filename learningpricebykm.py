@@ -67,8 +67,8 @@ if __name__ == "__main__":
 		# 	B1Down += (X[i]-Xmean) ** 2
 		# theta1 = B1Up / B1Down
 		# theta0 = Ymean - theta1 * Xmean
-		line = theta0 + theta1 * X
 		theta0, theta1 = learning_thetas(X, Y)
+		line = theta0 + theta1 * X
 		theta_csv(theta0, theta1)
 		predicted = predict(theta0, theta1, int(options.mileage))
 		print("The car that have " + str(options.mileage) + "km is estimated for " + str(round(predicted)) + " euro" + ("s" if predicted > 1 else ""))
