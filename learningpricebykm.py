@@ -34,19 +34,22 @@ def theta_csv(theta0, theta1):
 def predict(theta0, theta1, km):
 	return theta0 + theta1 * km
 
+def scaling_data(data, scale):
+    return [i / scale for i in data]
+
 def learning_thetas(X, Y):
 	theta0 = 0
 	theta1 = 0
-	Lrate = 0.1
+	Lrate = 0.0001
+	passes= 20000
 	rng = range(len(X))
 	m = float(len(X))
 
-	for i in range(10):
-		B0 = (1/m) * sum([(theta0 + theta1 * X[i]) - Y[i] for i in rng])
-		B1 = (1/m) * sum([((theta0 + theta1 * X[i]) - Y[i]) * X[i] for i in rng])
-
-		theta0 -= Lrate * B0
-		theta1 -= Lrate * B1
+	for i in range(passes):
+		B0 = Lrate * (1 / m) * sum([(theta0 + theta1 * X[i]) - Y[i] for i in rng])
+		B1 = Lrate * (1 / m) * sum([((theta0 + theta1 * X[i]) - Y[i]) * X[i] for i in rng])
+		theta0, theta1 = theta0 - B0, theta1 - B1
+	
 	return theta0, theta1
 
 if __name__ == "__main__":
@@ -71,7 +74,7 @@ if __name__ == "__main__":
 		# print (str(theta0) + " | " + str(theta1))
 		# 
 		print ("8499.599649933216 | -0.0214489635917023")
-		theta0, theta1 = learning_thetas(X, Y)
+		theta0, theta1 = learning_thetas(scaling_data(X, 1000), scaling_data(Y, 1000))
 		print (str(theta0) + " | " + str(theta1))
 		line = theta0 + theta1 * X
 		theta_csv(theta0, theta1)
