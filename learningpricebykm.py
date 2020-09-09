@@ -38,17 +38,15 @@ def learning_thetas(X, Y):
 	theta0 = 0
 	theta1 = 0
 	Lrate = 0.1
-	m = len(X)
-	steps = 100
+	rng = range(len(X))
+	m = float(len(X))
 
-	for i in range(steps):
-		B0 = B1 = 0
-		for j in range(m):
-			prediction = predict(theta0, theta1, X[j])
-			B0 += (prediction - Y[j])
-			B1 += ((prediction - Y[j]) * X[j])
-		theta0 -= (Lrate * B0) / m
-		theta1 -= (Lrate * B1) / m
+	for i in range(10):
+		B0 = (1/m) * sum([(theta0 + theta1 * X[i]) - Y[i] for i in rng])
+		B1 = (1/m) * sum([((theta0 + theta1 * X[i]) - Y[i]) * X[i] for i in rng])
+
+		theta0 -= Lrate * B0
+		theta1 -= Lrate * B1
 	return theta0, theta1
 
 if __name__ == "__main__":
@@ -61,17 +59,18 @@ if __name__ == "__main__":
 			print("Error with the data.csv file!")
 			exit (1)
 		# dev purpose 
-		Xmean= np.mean(X)
-		Ymean= np.mean(Y)
-		B1Up = 0
-		B1Down = 0
-		for i in range(len(X)):
-			B1Up += (X[i] - Xmean) * (Y[i] - Ymean)
-			B1Down += (X[i]-Xmean) ** 2
-		theta1 = B1Up / B1Down
-		theta0 = Ymean - theta1 * Xmean
-		print (str(theta0) + " | " + str(theta1))
+		# Xmean= np.mean(X)
+		# Ymean= np.mean(Y)
+		# B1Up = 0
+		# B1Down = 0
+		# for i in range(len(X)):
+		# 	B1Up += (X[i] - Xmean) * (Y[i] - Ymean)
+		# 	B1Down += (X[i]-Xmean) ** 2
+		# theta1 = B1Up / B1Down
+		# theta0 = Ymean - theta1 * Xmean
+		# print (str(theta0) + " | " + str(theta1))
 		# 
+		print ("8499.599649933216 | -0.0214489635917023")
 		theta0, theta1 = learning_thetas(X, Y)
 		print (str(theta0) + " | " + str(theta1))
 		line = theta0 + theta1 * X
