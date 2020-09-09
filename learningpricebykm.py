@@ -34,21 +34,22 @@ def theta_csv(theta0, theta1):
 def predict(theta0, theta1, km):
 	return theta0 + theta1 * km
 
-def learning_thetas(X, Y, theta0, theta1):
-	tmptheta0 = 0
-	tmptheta1 = 0
-	Lrate = 0.0001
-	B0 = 0
-	B1 = 0
-	new_y = lambda x: tmptheta0 + tmptheta1 * x
-	rng = range(len(X))
+def learning_thetas(X, Y):
+	theta0 = 0
+	theta1 = 0
+	Lrate = 0.1
 	m = len(X)
-	for i in range(len(X)):
-		B0 += 1.0/m * sum([Y[i] - new_y(X[i]) for i in rng])
-		B1 += 1.0/m * sum([(Y[i] - new_y(X[i])) * X[i] for i in rng])
-	tmptheta0 = Lrate * B0
-	tmptheta1 = Lrate * B1
-	return tmptheta0, tmptheta1
+	steps = 100
+
+	for i in range(steps):
+		B0 = B1 = 0
+		for j in range(m):
+			prediction = predict(theta0, theta1, X[j])
+			B0 += (prediction - Y[j])
+			B1 += ((prediction - Y[j]) * X[j])
+		theta0 -= (Lrate * B0) / m
+		theta1 -= (Lrate * B1) / m
+	return theta0, theta1
 
 if __name__ == "__main__":
 	if options.mileage:
@@ -59,6 +60,7 @@ if __name__ == "__main__":
 		except:
 			print("Error with the data.csv file!")
 			exit (1)
+		# dev purpose 
 		Xmean= np.mean(X)
 		Ymean= np.mean(Y)
 		B1Up = 0
@@ -69,7 +71,8 @@ if __name__ == "__main__":
 		theta1 = B1Up / B1Down
 		theta0 = Ymean - theta1 * Xmean
 		print (str(theta0) + " | " + str(theta1))
-		theta0, theta1 = learning_thetas(X, Y, theta0, theta1)
+		# 
+		theta0, theta1 = learning_thetas(X, Y)
 		print (str(theta0) + " | " + str(theta1))
 		line = theta0 + theta1 * X
 		theta_csv(theta0, theta1)
