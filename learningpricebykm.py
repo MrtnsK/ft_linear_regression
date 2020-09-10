@@ -2,7 +2,6 @@ import argparse
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
-import csv
 
 parser = argparse.ArgumentParser(
     description='Predict a car\'s value with linear regression.'
@@ -31,60 +30,50 @@ def theta_csv(theta0, theta1):
 			newdata = "theta0,theta1\n" + data
 			fd.write(newdata)
 
-def predict(theta0, theta1, km):
-	return theta0 + theta1 * km
+def predict(thetas, km):
+	return thetas[0] + thetas[1] * km
 
 def scaling_data(data, scale):
-    return [i / scale for i in data]
+    return data / scale
 
-def learning_thetas(X, Y):
-	theta0 = 0
-	theta1 = 0
-	Lrate = 0.0001
-	passes= 20000
-	rng = range(len(X))
+def learning_thetas(thetas, X, Y):
+	Lrate = 1
 	m = float(len(X))
 
-	for i in range(passes):
-		B0 = Lrate * (1 / m) * sum([(theta0 + theta1 * X[i]) - Y[i] for i in rng])
-		B1 = Lrate * (1 / m) * sum([((theta0 + theta1 * X[i]) - Y[i]) * X[i] for i in rng])
-		theta0, theta1 = theta0 - B0, theta1 - B1
-	
-	return theta0, theta1
+	while (1):
+		tmp = thetas
+		thetas = thetas - Lrate * (1 / m) * (X.T @ ((X @ thetas) - Y))
+		if np.array_equal(thetas, tmp):
+			break
+	return thetas
 
 if __name__ == "__main__":
 	if options.mileage:
 		try:
 			data = pd.read_csv("data.csv")
-			X = data['km'].values
-			Y = data['price'].values
+			X = np.array(data['km'].values)
+			X_raw = X
+			X = scaling_data(X, max(X_raw))
+			X = np.c_[np.ones(X.shape[0]), X]
+			Y = np.array(data['price'].values)
+			Y_raw = Y
+			Y = scaling_data(Y, max(Y_raw))
 		except:
 			print("Error with the data.csv file!")
 			exit (1)
-		# dev purpose 
-		# Xmean= np.mean(X)
-		# Ymean= np.mean(Y)
-		# B1Up = 0
-		# B1Down = 0
-		# for i in range(len(X)):
-		# 	B1Up += (X[i] - Xmean) * (Y[i] - Ymean)
-		# 	B1Down += (X[i]-Xmean) ** 2
-		# theta1 = B1Up / B1Down
-		# theta0 = Ymean - theta1 * Xmean
-		# print (str(theta0) + " | " + str(theta1))
-		# 
-		print ("8499.599649933216 | -0.0214489635917023")
-		theta0, theta1 = learning_thetas(scaling_data(X, 1000), scaling_data(Y, 1000))
-		print (str(theta0) + " | " + str(theta1))
-		line = theta0 + theta1 * X
-		theta_csv(theta0, theta1)
-		predicted = predict(theta0, theta1, int(options.mileage))
+		thetas = np.array([0,0])
+		thetas = learning_thetas(thetas, X, Y)
+		thetas[0] = thetas[0] * max(Y_raw)
+		thetas[1] = thetas[1] * (max(Y_raw) / max(X_raw))
+		theta_csv(thetas[0], thetas[1])
+		predicted = predict(thetas, int(options.mileage))
 		print("The car that have " + str(options.mileage) + "km is estimated for " + str(round(predicted)) + " euro" + ("s" if predicted > 1 else ""))
 		if options.graph:
-			line = theta0 + theta1 * X
-			axes = plt.axes()
-			axes.grid()
-			plt.scatter(X, Y)
+			line = thetas[0] + thetas[1] * X_raw
+			plt.scatter(data['km'].values, data['price'].values)
 			plt.scatter(int(options.mileage), predicted, c='y')
-			plt.plot(X,line, c='r')
+			plt.plot(X_raw,line, c='r')
+			plt.title('Estimation prix')
+			plt.xlabel('Kilometrage')
+			plt.ylabel('Prix')
 			plt.show()
