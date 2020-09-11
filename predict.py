@@ -46,9 +46,13 @@ if __name__ == "__main__":
 		if options.leastsquare:
 			theta0, theta1 = least_square(X, Y)
 		else:
-			thetas = pd.read_csv("thetas.csv")
-			theta0 = thetas.at[0, 'theta0']
-			theta1 = thetas.at[0, 'theta1']
+			try:
+				thetas = pd.read_csv("thetas.csv")
+				theta0 = thetas.at[0, 'theta0']
+				theta1 = thetas.at[0, 'theta1']
+			except:
+				print("Error with the thetas.csv file!")
+				exit (1)
 		line = theta0 + theta1 * X
 		predicted = predict(theta0, theta1, int(options.mileage))
 		print("The car that have " + str(options.mileage) + "km is estimated for " + str(round(predicted)) + " euro" + ("s" if predicted > 1 else ""))
@@ -58,4 +62,7 @@ if __name__ == "__main__":
 			plt.scatter(X, Y)
 			plt.scatter(int(options.mileage), predicted, c='y')
 			plt.plot(X,line, c='r')
+			plt.title('Estimation prix')
+			plt.xlabel('Kilometrage')
+			plt.ylabel('Prix')
 			plt.show()
